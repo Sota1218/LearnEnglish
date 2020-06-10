@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% if able_select %}
+    <h2>Please select, bro!</h2>
+    <form class="op" action="" method="POST">
+		{%csrf_token%}
+        <h3>Language:</h3>
+			<label>
+				<input type="radio" name="answerLanguage" value="jap" />
+				<span class="Japanese">Answer Japanese</span>
+			</label>
+			<label>
+				<input type="radio" name="answerLanguage" value="eng" checked />
+				<span class="English">Answer English</span>
+			</label>
+			<label>
+				<input type="radio" name="answerLanguage" value="rand" />
+				<span class="random">Random</span>
+			</label>
+            <br>
+        <h3>Number of question</h3>
+            <label>
+				<input type="radio" name="number" value="10" checked/>
+				<span class="number">10</span>
+			</label>
+            <label>
+				<input type="radio" name="number" value="30" />
+				<span class="number">30</span>
+			</label>
+            <label>
+				<input type="radio" name="number" value="50" />
+				<span class="number">50</span>
+			</label>
+        <h3>Order</h3>
+            <label>
+				<input type="radio" name="random" value="0" checked/>
+				<span class="order">Random Order</span>
+			</label>
+            <label>
+				<input type="radio" name="random" value="1"/>
+				<span class="order">Decendent</span>
+			</label>
+            <br>
+			<input type="submit" name="" value="OK" />
+    </form>
+    {% else %}
+	<form action="/test/calculate" method="POST">
+	{% csrf_token %}
+    {% for word in words %}
+    <p>{{word}}</p>
+	<input type="text" name="answers">
+    {% endfor %}
+	<input type="submit" value="送信">
+	</form>
+    {% endif %}
+
+</body>
+</html>

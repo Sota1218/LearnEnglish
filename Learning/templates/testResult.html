@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Score: {{request.session.dictOfResult.score}}/{{request.session.dictOfResult.numOfQ}}</h1>
+    {% if request.session.dictOfResult.WA %}
+    <table>
+        <thead>
+            <th>Question</th>
+            <th>Correct Answer</th>
+            <th>Your Answer</th>
+        </thead>
+        <tbody>
+        {% for wa in request.session.dictOfResult.WA %}
+        <tr>
+            <td>{{wa.question}}</td>
+            <td>{{wa.correct_answer}}</td>
+            <td>{{wa.user_answer}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    <a href="/learning"><button>Back to home</button></a>
+</body>
+</html>

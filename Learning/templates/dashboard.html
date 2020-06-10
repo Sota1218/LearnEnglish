@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'dashboard.css' %}"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type='text/javascript' src="static/dashboard.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <title>Document</title>
+</head>
+<body>
+  <h3>Welcome back, {{request.session.user_name}}!</h3>
+  <a href="/logout" class="btn btn-primary">Log out</a>
+  <a href="/test"><button class="btn btn-primary">Test</button></a>
+  <div class="submit-form">
+  <form action="/addWords" method="post" class="form-inline">
+    {% csrf_token %}
+    <div class="form-group">
+      <label > English </label>
+      <input type="text" name="engWord" minlength="1" class="form-control" ime-mode: "inactive">
+    </div>
+    <div class="form-group">
+      <label> Japanese </label>
+      <input type="text" name="japWord" minlength="1" class="form-control" ime-mode: "active" >
+    </div>
+    <input type="submit" value="提出" class="btn btn-primary">
+  </form>
+  </div>
+
+  <h2>音声認識サンプル</h2>
+  <button id="start-btn" class="btn btn-primary">start</button>
+  <div id="content"></div>
+
+    <table class="display-word table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>
+            <div>English</div>
+            <div id="switchArea">
+              <input type="checkbox" id="switch1">
+              <label for="switch1"><span></span></label>
+              <div id="swImg"></div>
+            </div>
+          </th>
+          <th>
+            <div>日本語</div>
+            <div id="switchArea">
+              <input type="checkbox" id="switch1">
+              <label for="switch1"><span></span></label>
+              <div id="swImg"></div>
+            </div>
+          </th>
+          <th>DELETE/EDIT</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for dict in dictionary %}
+        <tr>
+          <td></td>
+          <td class = "EnglishWords">{{dict.englishWord}}</td>
+          <td class = "JapaneseWords">{{dict.japaneseWord}}</td>
+          <td>
+            <a href="/delete/{{dict.id}}"><button class="btn btn-primary">DELETE</button></a>
+            <input type="button" class="btn btn-primary" id='{{dict.id}}' value="EDIT">
+          </td>
+        </tr>
+        <tr class="{{dict.id}} edit_box">
+          <form action="/update/{{dict.id}}" method="post" class="form-inline mx-auto">
+            {% csrf_token %}
+            <td></td>
+            <td>
+              <div class="form-group">
+                <input type="text" name="editEng" minlength="1" class="form-control" value="{{dict.englishWord}}" >
+              </div>
+            </td>
+            <td>
+              <div class="form-group">
+                <input type="text" name="editJap" minlength="1" class="form-control" value="{{dict.japaneseWord}}" >
+              </div>
+            </td>
+            <td>
+              <input type="submit" value="EDIT" class="btn btn-primary">
+              <button onclick="close()" class="btn btn-primary">BACK</button>
+            </td>
+          </form>
+        </tr>
+        <script>
+          $("#{{dict.id}}").on("click",()=>{
+            $(".{{dict.id}}").fadeIn(2000);
+            $("#{{dict.id}}").fadeOut();
+          });
+        </script>
+      {% endfor %}
+      </tbody>
+    </table>
+    <script>
+
+    $(".edit_box").hide();
+    var hideEng = ()=>{
+      $(".EnglishWords").css({opacity:"0"});
+    }
+    var hideJap = ()=>{
+      $(".JapaneseWords").css({opacity:"0"});
+    }
+    var close = ()=>{
+      $(".edit_box").fadeOut();
+    };
+    {% comment %} $(".edit_words").on("click",()=>{
+      $(".edit_box").show();
+    }); {% endcomment %}
+    var show_edit = function (button){
+      console.log(button);
+    };
+
+    const speech = new webkitSpeechRecognition();
+speech.lang = 'ja-JP';
+
+//使用する変数を用意
+const startbtn = document.getElementById('start-btn');
+const content = document.getElementById('content');
+
+
+startbtn.addEventListener('click' , function() {
+    // 音声認識をスタート
+    speech.start();
+});
+
+
+speech.addEventListener('result' , function(e) {
+   // 音声認識で取得した情報を、コンソール画面に表示
+   console.log(e);
+});
+
+speech.onresult = function(e) {
+         speech.stop();
+         if(e.results[0].isFinal){
+             var autotext =  e.results[0][0].transcript
+             console.log(e);
+             console.log(autotext);
+             content.innerHTML += '<div>'+ autotext +'</div>';
+          }
+     }
+
+
+  </script>
+</body>
+</html>
